@@ -743,6 +743,102 @@ button { cursor: pointer; }
 
 .admin-columns { align-items: start; }
 
+.admin-hero-hint {
+  margin-top: 12px !important;
+  font-size: 0.95rem;
+  max-width: 42ch;
+}
+
+.admin-guide {
+  border-left: 4px solid var(--b);
+  background: rgba(10, 10, 10, 0.03);
+}
+
+.admin-guide-title {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.admin-guide-steps {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.admin-guide-steps strong {
+  color: var(--b);
+}
+
+.admin-callout {
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: rgba(10, 10, 10, 0.04);
+  border: var(--gap) solid rgba(10, 10, 10, 0.08);
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.admin-callout p {
+  margin: 0 0 10px;
+}
+
+.admin-callout p:last-child {
+  margin-bottom: 0;
+}
+
+.admin-conflict-banner {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: rgba(180, 40, 40, 0.08);
+  border: var(--gap) solid rgba(180, 40, 40, 0.25);
+  font-size: 0.88rem;
+}
+
+.admin-conflict-banner ul {
+  margin: 8px 0 0;
+  padding-left: 1.2rem;
+}
+
+.admin-conflict-banner li {
+  margin-bottom: 6px;
+}
+
+.email-chip {
+  font-size: 0.85em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(10, 10, 10, 0.06);
+}
+
+.unit-card-conflict {
+  border-color: rgba(180, 40, 40, 0.35);
+}
+
+.unit-status-help {
+  margin: 4px 0 0 !important;
+  font-size: 0.85rem !important;
+  color: var(--muted) !important;
+  max-width: 36ch;
+}
+
+.stats-legend,
+.section-hint {
+  margin: -8px 0 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  max-width: 70ch;
+}
+
+.stats-legend {
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
 /* Timeline */
 .timeline-list {
   display: flex;

@@ -147,6 +147,23 @@ export const getAdminDashboard = query({
       });
     }
 
+    // Claim email -> unit ids that list this email (used to explain "conflict" rows).
+    const emailToUnitIds = new Map<string, Set<Id<"registrationUnits">>>();
+    for (const unit of units) {
+      const claims = await ctx.db
+        .query("unitEmailClaims")
+        .withIndex("by_unit_id", (q) => q.eq("unitId", unit._id))
+        .take(32);
+      for (const claim of claims) {
+        let set = emailToUnitIds.get(claim.email);
+        if (!set) {
+          set = new Set();
+          emailToUnitIds.set(claim.email, set);
+        }
+        set.add(claim.unitId);
+      }
+    }
+
     const hydratedUnits = [];
     for (const unit of units) {
       const members = [];
@@ -160,9 +177,24 @@ export const getAdminDashboard = query({
         });
       }
 
+      const conflictDetails: {
+        email: string;
+        otherUnitIds: Id<"registrationUnits">[];
+      }[] = [];
+      for (const email of unit.memberEmails) {
+        const set = emailToUnitIds.get(email);
+        if (set && set.size > 1) {
+          conflictDetails.push({
+            email,
+            otherUnitIds: [...set].filter((id) => id !== unit._id),
+          });
+        }
+      }
+
       hydratedUnits.push({
         ...unit,
         members,
+        conflictDetails,
       });
     }
 

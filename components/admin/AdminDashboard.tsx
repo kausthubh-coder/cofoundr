@@ -69,6 +69,38 @@ function buildEventForm(event: {
   };
 }
 
+const UNIT_STATUS_LABELS: Record<
+  "pending_members" | "ready" | "placed" | "conflict" | "dropped",
+  string
+> = {
+  pending_members: "Pending members",
+  ready: "Ready to match",
+  placed: "Placed in a team",
+  conflict: "Conflict",
+  dropped: "Dropped",
+};
+
+const UNIT_STATUS_HELP: Record<
+  "pending_members" | "ready" | "placed" | "conflict" | "dropped",
+  string
+> = {
+  pending_members: "Not everyone in this group has finished registration yet.",
+  ready: "Everyone in this group is registered; the matcher can keep them together.",
+  placed: "This group is already tied to a draft or published team.",
+  conflict:
+    "At least one email is listed on more than one group. Remove the duplicate from one side.",
+  dropped: "This registration group is no longer active.",
+};
+
+function describeOtherUnit(
+  unitId: Id<"registrationUnits">,
+  allUnits: Array<{ _id: Id<"registrationUnits">; source: "solo" | "self_formed" }>,
+) {
+  const u = allUnits.find((candidate) => candidate._id === unitId);
+  const kind = u?.source === "solo" ? "Solo" : "Friend group";
+  return `${kind} …${unitId.slice(-6)}`;
+}
+
 function formatParticipantSummary(participant: {
   major?: "cs" | "business" | null;
   skills?: string[];
@@ -257,6 +289,9 @@ export default function AdminDashboard() {
           <p className="eyebrow">Admin Control Room</p>
           <h1>{dashboard.event.eventName}</h1>
           <p>{dashboard.event.overview}</p>
+          <p className="admin-hero-hint">
+            Use the sections below in order: fix registration groups, run the matcher, adjust draft teams, then publish.
+          </p>
         </div>
         <div className="stack-list tight">
           <button className="primary-button" type="button" onClick={() => handleAsync(() => runMatching({ adminPassword }), "Matcher completed.")}>
@@ -298,14 +333,42 @@ export default function AdminDashboard() {
 
       {statusMessage ? <div className="panel helper-text">{statusMessage}</div> : null}
 
+      <section className="panel admin-guide">
+        <h2 className="admin-guide-title">How this dashboard is laid out</h2>
+        <ol className="admin-guide-steps">
+          <li>
+            <strong>Reserved units (left)</strong> — Registration groups: solo signups or friend groups who asked to stay
+            together. The matcher treats each unit as one block (when status is ready and there is no conflict).
+          </li>
+          <li>
+            <strong>Participants (left)</strong> — Everyone who signed up. Drag a row into a draft team card on the right,
+            or use actions to split or mark someone as already placed.
+          </li>
+          <li>
+            <strong>Draft teams (right)</strong> — Output after you run the matcher, or teams you created manually. Lock when
+            happy, merge duplicates, then publish all.
+          </li>
+          <li>
+            <strong>Event settings (right)</strong> — Copy, deadlines, and phase labels participants see on the site.
+          </li>
+        </ol>
+      </section>
+
       <section className="stats-grid">
         <div className="panel stat-card"><span>Registered</span><strong>{dashboard.overview.registered}</strong></div>
         <div className="panel stat-card"><span>Pending</span><strong>{dashboard.overview.pending}</strong></div>
         <div className="panel stat-card"><span>Ready</span><strong>{dashboard.overview.ready}</strong></div>
         <div className="panel stat-card"><span>Drafts</span><strong>{dashboard.overview.matched}</strong></div>
         <div className="panel stat-card"><span>Published</span><strong>{dashboard.overview.published}</strong></div>
-        <div className="panel stat-card"><span>Conflicts</span><strong>{dashboard.overview.conflicts}</strong></div>
+        <div className="panel stat-card">
+          <span title="Registration groups where the same email is listed on more than one unit">Unit conflicts</span>
+          <strong>{dashboard.overview.conflicts}</strong>
+        </div>
       </section>
+      <p className="stats-legend">
+        <strong>Ready</strong> (stat above) counts registration groups that are fully registered with no conflict — not
+        the same as “Registered” people. <strong>Drafts</strong> is non-published team rows.
+      </p>
 
       <section className="two-column-layout admin-columns">
         <div className="stack-list">
@@ -314,6 +377,7 @@ export default function AdminDashboard() {
               <h2>Participants</h2>
               <input className="search-input" placeholder="Search by name or email" value={search} onChange={(eventObject) => setSearch(eventObject.target.value)} />
             </div>
+            <p className="section-hint">Drag a participant onto a draft team card to move them. “New team” creates an empty draft.</p>
             <div className="stack-list compact-scroll">
               {filteredParticipants.map((participant) => (
                 <div className="participant-row" draggable key={participant._id} onDragStart={() => setDraggedParticipantId(participant._id)}>
@@ -341,35 +405,93 @@ export default function AdminDashboard() {
           <section className="panel stack-panel">
             <div className="section-heading">
               <h2>Reserved units</h2>
-              <StatusBadge label={formatDateTime(dashboard.event.registrationDeadline)} tone="neutral" />
+              <StatusBadge label={`${dashboard.units.length} groups`} tone="neutral" />
+            </div>
+            <div className="admin-callout">
+              <p>
+                <strong>What this is:</strong> When registrants list teammates, they form a <em>unit</em> so matching can
+                keep them on the same team. Solo signups are a one-person unit. Status updates as people finish
+                registration.
+              </p>
+              <p>
+                <strong>Conflicts:</strong> The same email appears on more than one unit (for example, two friend groups
+                both listed the same person). Matching is blocked for those units until you remove the wrong listing with{" "}
+                <strong>Remove</strong> on one of the groups — keep the listing that matches who should actually be
+                together.
+              </p>
             </div>
             <div className="stack-list compact-scroll">
-              {dashboard.units.map((unit) => (
-                <div className="team-card" key={unit._id}>
-                  <div className="section-heading">
-                    <h3>{unit.source === "solo" ? "Solo unit" : "Friend group"}</h3>
-                    <StatusBadge label={unit.status.replaceAll("_", " ")} tone={unit.status === "conflict" ? "danger" : unit.status === "ready" ? "success" : "warning"} />
-                  </div>
-                  <div className="stack-list tight">
-                    {unit.members.map((member) => (
-                      <div className="inline-row" key={member.email}>
-                        <div>
-                          <strong>{member.name ?? member.email}</strong>
-                          <p>{member.email}</p>
-                        </div>
-                        <div className="inline-actions">
-                          <StatusBadge label={member.registered ? "Registered" : "Pending"} tone={member.registered ? "success" : "warning"} />
-                          {unit.members.length > 1 ? (
-                            <button className="mini-button" type="button" onClick={() => handleAsync(() => removeReservedMember({ adminPassword, unitId: unit._id, email: member.email }), "Reserved member removed.")}>
-                              Remove
-                            </button>
-                          ) : null}
-                        </div>
+              {dashboard.units.map((unit) => {
+                const statusKey = unit.status as keyof typeof UNIT_STATUS_LABELS;
+                const statusLabel = UNIT_STATUS_LABELS[statusKey] ?? unit.status.replaceAll("_", " ");
+                const statusHelp = UNIT_STATUS_HELP[statusKey] ?? "";
+                const conflictDetails = unit.conflictDetails ?? [];
+                return (
+                  <div className={`team-card ${unit.status === "conflict" ? "unit-card-conflict" : ""}`} key={unit._id}>
+                    <div className="section-heading">
+                      <div>
+                        <h3>{unit.source === "solo" ? "Solo unit" : "Friend group"}</h3>
+                        <p className="unit-status-help">{statusHelp}</p>
                       </div>
-                    ))}
+                      <div className="stack-list tight align-end">
+                        <StatusBadge
+                          label={statusLabel}
+                          tone={
+                            unit.status === "conflict"
+                              ? "danger"
+                              : unit.status === "ready"
+                                ? "success"
+                                : unit.status === "placed"
+                                  ? "info"
+                                  : "warning"
+                          }
+                        />
+                      </div>
+                    </div>
+                    {unit.status === "conflict" && conflictDetails.length > 0 ? (
+                      <div className="admin-conflict-banner">
+                        <strong>Overlapping email(s):</strong>
+                        <ul>
+                          {conflictDetails.map((row) => (
+                            <li key={row.email}>
+                              <code className="email-chip">{row.email}</code> also listed on{" "}
+                              {row.otherUnitIds.map((id) => describeOtherUnit(id, dashboard.units)).join("; ")}. Remove this
+                              person from every group but the one that should win.
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                    <div className="stack-list tight">
+                      {unit.members.map((member) => (
+                        <div className="inline-row" key={member.email}>
+                          <div>
+                            <strong>{member.name ?? member.email}</strong>
+                            <p>{member.email}</p>
+                          </div>
+                          <div className="inline-actions">
+                            <StatusBadge label={member.registered ? "Registered" : "Pending"} tone={member.registered ? "success" : "warning"} />
+                            {unit.members.length > 1 ? (
+                              <button
+                                className="mini-button"
+                                type="button"
+                                onClick={() =>
+                                  handleAsync(
+                                    () => removeReservedMember({ adminPassword, unitId: unit._id, email: member.email }),
+                                    "Removed from this unit; claims refreshed.",
+                                  )
+                                }
+                              >
+                                Remove
+                              </button>
+                            ) : null}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </div>
@@ -380,6 +502,10 @@ export default function AdminDashboard() {
               <h2>Draft teams</h2>
               <StatusBadge label={`${dashboard.teams.length} teams`} tone="info" />
             </div>
+            <p className="section-hint">
+              Drop participants here from the list on the left. Locked teams stay fixed when you re-run the matcher (if
+              your workflow uses that). Publish when all teams are final.
+            </p>
             <div className="team-board">
               {dashboard.teams.map((team) => (
                 <div
