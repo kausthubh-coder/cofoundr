@@ -124,9 +124,6 @@ export const searchTeammates = query({
 
     return participants
       .filter((participant) => {
-        if (!participant.registrationComplete) {
-          return false;
-        }
         if (participant.clerkUserId === user.clerkUserId) {
           return false;
         }
@@ -147,7 +144,43 @@ export const searchTeammates = query({
         name: participant.name,
         email: participant.email,
         major: participant.major ?? null,
+        registrationComplete: participant.registrationComplete,
       }));
+  },
+});
+
+export const ensureParticipant = mutation({
+  args: {
+    emailHint: v.string(),
+    nameHint: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+
+    const existing = await ctx.db
+      .query("participants")
+      .withIndex("by_clerk_user_id", (q) => q.eq("clerkUserId", user.clerkUserId))
+      .unique();
+
+    if (existing) {
+      return existing._id;
+    }
+
+    const email = user.email ?? normalizeEmail(args.emailHint);
+    if (!email) {
+      throw new Error("Missing email address");
+    }
+
+    return await ctx.db.insert("participants", {
+      clerkUserId: user.clerkUserId,
+      email,
+      name: args.nameHint || user.name || email,
+      requestedTeammateEmails: [],
+      registrationComplete: false,
+      excludedFromMatching: false,
+      unitId: null,
+      teamId: null,
+    });
   },
 });
 

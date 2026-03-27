@@ -412,13 +412,16 @@ export default function RegistrationForm({
                       <span>
                         {candidate.major ? MAJOR_LABELS[candidate.major] : "Participant"}
                       </span>
+                      {!candidate.registrationComplete ? (
+                        <span className="pill-subtle">Pending registration</span>
+                      ) : null}
                     </button>
                   ))}
               </div>
               {!teammateCandidates?.length ? (
                 <p className="helper-text">
-                  No eligible teammates found yet. They need to finish registration before they can
-                  be selected.
+                  No teammates found yet. Ask them to sign in — they will appear here
+                  immediately after creating an account.
                 </p>
               ) : null}
             </div>

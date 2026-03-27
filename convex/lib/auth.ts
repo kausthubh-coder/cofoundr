@@ -2,7 +2,11 @@ import { ActionCtx, MutationCtx, QueryCtx } from "../_generated/server";
 import { normalizeEmail } from "../../lib/hackathon";
 
 type AnyCtx = QueryCtx | MutationCtx | ActionCtx;
-const HARDCODED_ADMIN_PASSWORD = "22301823";
+
+function getConfiguredAdminPassword() {
+  const password = process.env.ADMIN_PASSWORD;
+  return typeof password === "string" && password.length > 0 ? password : null;
+}
 
 function extractEmail(identity: { [key: string]: unknown; email?: string }) {
   const candidates = [
@@ -61,9 +65,10 @@ export async function requireAdmin(ctx: AnyCtx) {
 }
 
 export function getAdminPasswordStatus(password: string) {
+  const configuredPassword = getConfiguredAdminPassword();
   return {
-    configured: true,
-    valid: password === HARDCODED_ADMIN_PASSWORD,
+    configured: configuredPassword !== null,
+    valid: configuredPassword !== null && password === configuredPassword,
   };
 }
 
