@@ -26,6 +26,13 @@ type SubmissionFormState = {
   notes: string;
 };
 
+function formatTimestamp(value: number) {
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
 const EMPTY_SUBMISSION: SubmissionFormState = {
   title: "",
   description: "",
@@ -356,6 +363,58 @@ export default function ParticipantDashboard() {
             </button>
             {message ? <p className="helper-text">{message}</p> : null}
           </form>
+
+          <div className="sub-panel">
+            <div className="section-heading">
+              <h3>Judging</h3>
+              <StatusBadge
+                label={
+                  !data.submission
+                    ? "No submission"
+                    : data.submission.judging.status === "released"
+                      ? "Released"
+                      : data.submission.judging.status === "pending_release"
+                        ? "Pending release"
+                        : "Not started"
+                }
+                tone={
+                  !data.submission
+                    ? "neutral"
+                    : data.submission.judging.status === "released"
+                      ? "success"
+                      : data.submission.judging.status === "pending_release"
+                        ? "warning"
+                        : "neutral"
+                }
+              />
+            </div>
+
+            {!data.submission ? <p>No submission yet.</p> : null}
+            {data.submission?.judging.status === "not_started" ? (
+              <p>Judging has not been entered yet.</p>
+            ) : null}
+            {data.submission?.judging.status === "pending_release" ? (
+              <p>Your results have not been released yet.</p>
+            ) : null}
+            {data.submission?.judging.status === "released" ? (
+              <div className="stack-list">
+                <div className="inline-row">
+                  <span>Score</span>
+                  <strong>{data.submission.judging.score} / 100</strong>
+                </div>
+                <div className="stack-list tight">
+                  <strong>Feedback summary</strong>
+                  <p>{data.submission.judging.feedbackSummary}</p>
+                </div>
+                {data.submission.judging.releasedAt ? (
+                  <div className="inline-row">
+                    <span>Released</span>
+                    <strong>{formatTimestamp(data.submission.judging.releasedAt)}</strong>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
         </div>
       </section>
     </div>

@@ -29,6 +29,11 @@ type EventFormState = {
   faqText: string;
 };
 
+type SubmissionJudgingDraft = {
+  judgeScore: string;
+  judgeFeedbackSummary: string;
+};
+
 function toLocalDateTime(value: string) {
   const date = new Date(value);
   const offset = date.getTimezoneOffset();
@@ -136,6 +141,7 @@ export default function AdminDashboard() {
   const [search, setSearch] = useState("");
   const [draggedParticipantId, setDraggedParticipantId] = useState<Id<"participants"> | null>(null);
   const [eventDraft, setEventDraft] = useState<EventFormState | null>(null);
+  const [judgingDrafts, setJudgingDrafts] = useState<Record<string, SubmissionJudgingDraft>>({});
 
   const dashboard = useQuery(
     api.teams.getAdminDashboard,
@@ -148,6 +154,8 @@ export default function AdminDashboard() {
   const publishAll = useMutation(api.teams.publishAll);
   const setParticipantPlaced = useMutation(api.teams.setParticipantPlaced);
   const removeReservedMember = useMutation(api.units.removeReservedMember);
+  const saveJudging = useMutation(api.submissions.saveJudging);
+  const setResultsReleased = useMutation(api.submissions.setResultsReleased);
   const saveEvent = useMutation(api.eventConfig.save);
   const setPhase = useMutation(api.eventConfig.setPhase);
 
@@ -280,6 +288,69 @@ export default function AdminDashboard() {
           }),
       });
     }, "Event settings saved.");
+  };
+
+  const getSubmissionJudgingDraft = (submission: {
+    _id: Id<"submissions">;
+    judgeScore?: number;
+    judgeFeedbackSummary?: string;
+  }) =>
+    judgingDrafts[submission._id] ?? {
+      judgeScore:
+        typeof submission.judgeScore === "number" ? String(submission.judgeScore) : "",
+      judgeFeedbackSummary: submission.judgeFeedbackSummary ?? "",
+    };
+
+  const setSubmissionJudgingDraft = (
+    submission: {
+      _id: Id<"submissions">;
+      judgeScore?: number;
+      judgeFeedbackSummary?: string;
+    },
+    patch: Partial<SubmissionJudgingDraft>,
+  ) => {
+    setJudgingDrafts((current) => ({
+      ...current,
+      [submission._id]: {
+        ...(current[submission._id] ?? {
+          judgeScore:
+            typeof submission.judgeScore === "number" ? String(submission.judgeScore) : "",
+          judgeFeedbackSummary: submission.judgeFeedbackSummary ?? "",
+        }),
+        ...patch,
+      },
+    }));
+  };
+
+  const handleSaveJudging = async (submission: {
+    _id: Id<"submissions">;
+    judgeScore?: number;
+    judgeFeedbackSummary?: string;
+  }) => {
+    const draft = getSubmissionJudgingDraft(submission);
+    const judgeScore = Number(draft.judgeScore);
+    const judgeFeedbackSummary = draft.judgeFeedbackSummary.trim();
+
+    if (!Number.isFinite(judgeScore) || judgeScore < 0 || judgeScore > 100) {
+      setStatusMessage("Judge score must be a number between 0 and 100.");
+      return;
+    }
+
+    if (!judgeFeedbackSummary) {
+      setStatusMessage("Feedback summary is required.");
+      return;
+    }
+
+    await handleAsync(
+      () =>
+        saveJudging({
+          adminPassword,
+          submissionId: submission._id,
+          judgeScore,
+          judgeFeedbackSummary,
+        }),
+      "Judging saved.",
+    );
   };
 
   return (
@@ -569,6 +640,152 @@ export default function AdminDashboard() {
 
           <section className="panel stack-panel">
             <div className="section-heading">
+              <h2>Submissions &amp; judging</h2>
+              <StatusBadge label={`${dashboard.submissions.length} submissions`} tone="info" />
+            </div>
+            <p className="section-hint">
+              Save a manual score and summary first, then release the result when you want the team
+              to see it in their dashboard.
+            </p>
+            <div className="stack-list compact-scroll">
+              {dashboard.submissions.length === 0 ? (
+                <p>No submissions yet.</p>
+              ) : (
+                dashboard.submissions.map((submission) => {
+                  const draft = getSubmissionJudgingDraft(submission);
+                  const hasSavedJudging =
+                    typeof submission.judgeScore === "number" &&
+                    Boolean(submission.judgeFeedbackSummary?.trim());
+                  const statusLabel = submission.resultsReleasedAt
+                    ? "Released"
+                    : hasSavedJudging
+                      ? "Scored, not released"
+                      : "No score";
+                  const statusTone = submission.resultsReleasedAt
+                    ? "success"
+                    : hasSavedJudging
+                      ? "warning"
+                      : "neutral";
+
+                  return (
+                    <div className="team-card" key={submission._id}>
+                      <div className="section-heading">
+                        <div>
+                          <h3>
+                            {submission.teamNumber
+                              ? `Team ${submission.teamNumber}`
+                              : `Team …${submission.teamId.slice(-4)}`}
+                          </h3>
+                          <p>{submission.title}</p>
+                        </div>
+                        <StatusBadge label={statusLabel} tone={statusTone} />
+                      </div>
+
+                      <div className="stack-list tight">
+                        <div className="inline-row">
+                          <span>Submitted</span>
+                          <strong>{formatDateTime(new Date(submission.submittedAt).toISOString())}</strong>
+                        </div>
+                        <div className="inline-row">
+                          <span>Last updated</span>
+                          <strong>{formatDateTime(new Date(submission.updatedAt).toISOString())}</strong>
+                        </div>
+                        {submission.repoUrl ? (
+                          <a href={submission.repoUrl} target="_blank" rel="noreferrer">
+                            Repository link
+                          </a>
+                        ) : null}
+                        {submission.demoUrl ? (
+                          <a href={submission.demoUrl} target="_blank" rel="noreferrer">
+                            Demo link
+                          </a>
+                        ) : null}
+                      </div>
+
+                      <div className="stack-list tight">
+                        <label className="field">
+                          <span>Judge score</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="any"
+                            value={draft.judgeScore}
+                            onChange={(eventObject) =>
+                              setSubmissionJudgingDraft(submission, {
+                                judgeScore: eventObject.target.value,
+                              })
+                            }
+                          />
+                        </label>
+                        <label className="field">
+                          <span>Feedback summary</span>
+                          <textarea
+                            rows={4}
+                            value={draft.judgeFeedbackSummary}
+                            onChange={(eventObject) =>
+                              setSubmissionJudgingDraft(submission, {
+                                judgeFeedbackSummary: eventObject.target.value,
+                              })
+                            }
+                          />
+                        </label>
+                      </div>
+
+                      <div className="inline-actions wrap">
+                        <button
+                          className="mini-button"
+                          type="button"
+                          onClick={() => void handleSaveJudging(submission)}
+                        >
+                          Save judging
+                        </button>
+                        <button
+                          className="mini-button"
+                          type="button"
+                          disabled={!hasSavedJudging}
+                          onClick={() =>
+                            handleAsync(
+                              () =>
+                                setResultsReleased({
+                                  adminPassword,
+                                  submissionId: submission._id,
+                                  released: true,
+                                }),
+                              "Results released to team.",
+                            )
+                          }
+                        >
+                          Release to team
+                        </button>
+                        <button
+                          className="mini-button"
+                          type="button"
+                          disabled={!submission.resultsReleasedAt}
+                          onClick={() =>
+                            handleAsync(
+                              () =>
+                                setResultsReleased({
+                                  adminPassword,
+                                  submissionId: submission._id,
+                                  released: false,
+                                }),
+                              "Results hidden from team.",
+                            )
+                          }
+                        >
+                          Unrelease
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </section>
+
+          <section className="panel stack-panel">
+            <div className="section-heading">
               <h2>Event settings</h2>
               <StatusBadge label={PHASE_LABELS[eventForm.phase]} tone="info" />
             </div>
@@ -593,5 +810,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-

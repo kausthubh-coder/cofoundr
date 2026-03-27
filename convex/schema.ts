@@ -130,6 +130,12 @@ export default defineSchema({
     submittedByParticipantId: v.id("participants"),
     submittedAt: v.number(),
     updatedAt: v.number(),
+    judgeScore: v.optional(v.number()),
+    judgeFeedbackSummary: v.optional(v.string()),
+    judgedAt: v.optional(v.number()),
+    resultsReleasedAt: v.optional(v.number()),
+    judgedByLabel: v.optional(v.string()),
+    resultsReleasedByLabel: v.optional(v.string()),
   }).index("by_team_id", ["teamId"]),
 
   eventConfig: defineTable({

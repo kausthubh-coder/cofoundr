@@ -44,6 +44,63 @@ function deriveDraftStatus(participants: Awaited<ReturnType<typeof getParticipan
   return "flagged" as const;
 }
 
+function shapeSubmissionForParticipant(
+  submission: {
+    _id: Id<"submissions">;
+    _creationTime: number;
+    teamId: Id<"teams">;
+    title: string;
+    description: string;
+    repoUrl?: string;
+    demoUrl?: string;
+    metadata: {
+      deckUrl?: string;
+      notes?: string;
+      techStack?: string;
+    };
+    submittedByParticipantId: Id<"participants">;
+    submittedAt: number;
+    updatedAt: number;
+    judgeScore?: number;
+    judgeFeedbackSummary?: string;
+    judgedAt?: number;
+    resultsReleasedAt?: number;
+  } | null,
+) {
+  if (!submission) {
+    return null;
+  }
+
+  const judgingStatus =
+    typeof submission.judgeScore === "number" && submission.judgeFeedbackSummary?.trim()
+      ? submission.resultsReleasedAt
+        ? "released"
+        : "pending_release"
+      : "not_started";
+
+  return {
+    _id: submission._id,
+    _creationTime: submission._creationTime,
+    teamId: submission.teamId,
+    title: submission.title,
+    description: submission.description,
+    repoUrl: submission.repoUrl,
+    demoUrl: submission.demoUrl,
+    metadata: submission.metadata,
+    submittedByParticipantId: submission.submittedByParticipantId,
+    submittedAt: submission.submittedAt,
+    updatedAt: submission.updatedAt,
+    judging: {
+      status: judgingStatus,
+      score: submission.resultsReleasedAt ? submission.judgeScore ?? null : null,
+      feedbackSummary: submission.resultsReleasedAt
+        ? submission.judgeFeedbackSummary ?? null
+        : null,
+      releasedAt: submission.resultsReleasedAt ?? null,
+    },
+  };
+}
+
 export const getMine = query({
   args: {},
   handler: async (ctx) => {
@@ -109,7 +166,7 @@ export const getMine = query({
             members: teamMembers,
           }
         : null,
-      submission,
+      submission: shapeSubmissionForParticipant(submission),
       event,
     };
   },
@@ -122,10 +179,11 @@ export const getAdminDashboard = query({
   handler: async (ctx, args) => {
     requireAdminPassword(args.adminPassword);
 
-    const [participants, units, teams, event] = await Promise.all([
+    const [participants, units, teams, submissions, event] = await Promise.all([
       ctx.db.query("participants").order("desc").take(512),
       ctx.db.query("registrationUnits").order("desc").take(256),
       ctx.db.query("teams").order("desc").take(256),
+      ctx.db.query("submissions").order("desc").take(256),
       getEventConfigOrDefault(ctx),
     ]);
 
@@ -146,6 +204,21 @@ export const getAdminDashboard = query({
         members,
       });
     }
+
+    const hydratedSubmissions = submissions.map((submission) => {
+      const team = teamMap.get(submission.teamId);
+      return {
+        ...submission,
+        teamNumber: team?.teamNumber ?? null,
+        teamStatus: team?.status ?? null,
+        teamMembers:
+          team?.participantIds
+            .map((participantId) =>
+              participants.find((candidate) => candidate._id === participantId),
+            )
+            .filter((participant) => participant !== undefined) ?? [],
+      };
+    });
 
     // Claim email -> unit ids that list this email (used to explain "conflict" rows).
     const emailToUnitIds = new Map<string, Set<Id<"registrationUnits">>>();
@@ -216,6 +289,7 @@ export const getAdminDashboard = query({
       })),
       units: hydratedUnits,
       teams: hydratedTeams,
+      submissions: hydratedSubmissions,
       event,
     };
   },
@@ -473,7 +547,6 @@ export const setParticipantPlaced = mutation({
     return participant._id;
   },
 });
-
 
 
 
