@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cofoundr | The Editorial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #000000;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: 'DM Sans', sans-serif;
+            overflow-x: hidden;
+            border: 12px solid var(--fg);
+            min-height: 100vh;
+        }
+        .font-display {
+            font-family: 'Anton', sans-serif;
+            text-transform: uppercase;
+        }
+        .border-heavy {
+            border-color: var(--fg);
+            border-width: 2px;
+        }
+        .border-bottom-heavy {
+            border-bottom: 4px solid var(--fg);
+        }
+        /* Custom selection */
+        ::selection {
+            background: var(--fg);
+            color: var(--bg);
+        }
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            border-top: 2px solid var(--fg);
+            border-bottom: 2px solid var(--fg);
+            padding: 1rem 0;
+            background: var(--fg);
+            color: var(--bg);
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+</head>
+<body class="antialiased m-4">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center border-bottom-heavy p-6">
+        <div class="font-display text-4xl tracking-wide">COFOUNDR</div>
+        <div class="text-sm font-bold uppercase tracking-widest hidden sm:block text-right">
+            Curated matching for<br>ambitious students
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 border-bottom-heavy">
+        <div class="lg:col-span-8 p-6 lg:p-12 lg:border-r-4 border-[var(--fg)] flex flex-col justify-center">
+            <h1 class="font-display text-[15vw] lg:text-[10vw] leading-[0.85] mb-6">
+                BUILD<br>COMPANIES.<br>NOT SIDE<br>PROJECTS.
+            </h1>
+        </div>
+        <div class="lg:col-span-4 flex flex-col border-t-4 lg:border-t-0 border-[var(--fg)]">
+            <div class="p-6 lg:p-12 flex-1 flex flex-col justify-center bg-black text-white">
+                <h2 class="font-display text-4xl mb-4">THE PROBLEM</h2>
+                <p class="text-lg leading-relaxed font-medium mb-6">
+                    Random networking is noisy. Skill gaps kill momentum. Most student startups die because they are treated as experiments. 
+                </p>
+                <p class="text-lg leading-relaxed font-medium mb-12 opacity-80">
+                    We match you based on skills, vision, and commitment. Find the person who builds what you can't.
+                </p>
+                <a href="#waitlist" class="block w-full text-center bg-white text-black font-display text-2xl py-4 hover:bg-gray-200 transition-colors">
+                    CLAIM YOUR SPOT
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee-container font-display text-3xl tracking-widest">
+        <div class="marquee-content">
+            BUILT FOR BUILDERS, NOT BROWSERS + NO COLD DMS + CURATED MATCHES + REAL INCOME + BUILT FOR BUILDERS, NOT BROWSERS + NO COLD DMS + CURATED MATCHES + REAL INCOME + 
+        </div>
+    </div>
+
+    <!-- Value Props (Editorial Grid) -->
+    <section class="grid grid-cols-1 md:grid-cols-3 border-bottom-heavy">
+        <div class="p-8 md:p-12 border-b-2 md:border-b-0 md:border-r-2 border-[var(--fg)]">
+            <div class="font-display text-7xl mb-6">01</div>
+            <h3 class="font-bold text-xl uppercase tracking-widest mb-4">Find the Right<br>Cofounder</h3>
+            <p class="leading-relaxed font-medium">The differentiator is curation. Early members get priority matching. Connect with your ideal cofounder and start building. No guessing.</p>
+        </div>
+        <div class="p-8 md:p-12 border-b-2 md:border-b-0 md:border-r-2 border-[var(--fg)]">
+            <div class="font-display text-7xl mb-6">02</div>
+            <h3 class="font-bold text-xl uppercase tracking-widest mb-4">Build Fast,<br>Build Better</h3>
+            <p class="leading-relaxed font-medium">The right cofounder removes blockers. When someone covers what you can't, you ship faster. Less friction, more output.</p>
+        </div>
+        <div class="p-8 md:p-12">
+            <div class="font-display text-7xl mb-6">03</div>
+            <h3 class="font-bold text-xl uppercase tracking-widest mb-4">Turn Ideas<br>Into Revenue</h3>
+            <p class="leading-relaxed font-medium">This is explicitly not for casual side projects. Build companies that generate real income. We filter in serious users and filter out browsers.</p>
+        </div>
+    </section>
+
+    <!-- Waitlist / Footer -->
+    <section id="waitlist" class="p-6 lg:p-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+            <h2 class="font-display text-7xl lg:text-9xl leading-[0.85] mb-6">ACCESS<br>GRANTED.</h2>
+            <p class="text-xl font-bold uppercase tracking-widest max-w-md">Priority matching and exclusive access for early members.</p>
+        </div>
+        <div>
+            <form class="flex flex-col gap-4 border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <label class="font-bold uppercase tracking-widest text-sm">Join the founding community</label>
+                <input type="email" placeholder="Your .edu email address" class="w-full border-b-2 border-black p-4 text-xl font-medium focus:outline-none focus:bg-gray-50" required>
+                <button type="submit" class="w-full bg-black text-white font-display text-3xl py-6 mt-4 hover:bg-gray-800 transition-colors">
+                    JOIN WAITLIST
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="border-top-heavy p-6 border-t-4 border-black flex justify-between items-center text-sm font-bold uppercase tracking-widest">
+        <div>COFOUNDR © 2026</div>
+        <div>Pranav Akki & Charan Dhanasekar</div>
+    </footer>
+
+</body>
+</html>

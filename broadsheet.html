@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cofoundr | The Chronicle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        :root {
+            --paper:#F2EFE7;
+            --ink:#0D0D0D;
+            --rule:#0D0D0D;
+            --muted:#5a5a52;
+        }
+        body {
+            background:var(--paper);
+            color:var(--ink);
+            font-family:'Source Serif 4', serif;
+            overflow-x:hidden;
+        }
+        ::selection { background:var(--ink); color:var(--paper); }
+        h1,h2,h3,h4,h5,.display { font-family:'Playfair Display', serif; }
+
+        /* — OUTER FRAME — */
+        .frame { border:3px solid var(--ink); margin:12px; min-height:calc(100vh - 24px); }
+
+        /* — MASTHEAD — */
+        .masthead {
+            border-bottom:3px solid var(--ink);
+            padding:1.5rem 2rem;
+        }
+        .mast-top {
+            display:flex; justify-content:space-between;
+            font-size:.65rem; letter-spacing:.25em; text-transform:uppercase;
+            margin-bottom:1.25rem; color:var(--muted);
+            font-family:'Source Serif 4',serif;
+            font-variant-numeric:tabular-nums;
+        }
+        .mast-top span:nth-child(2) { opacity:.4; }
+        .mast-name {
+            font-family:'Playfair Display',serif;
+            font-size:clamp(3.5rem,9vw,7rem);
+            font-weight:900;
+            text-align:center;
+            letter-spacing:-.02em;
+            line-height:1;
+            border-top:1px solid var(--ink);
+            border-bottom:1px solid var(--ink);
+            padding:1.25rem 0;
+        }
+        .mast-tagline {
+            text-align:center;
+            font-size:.7rem;
+            letter-spacing:.3em;
+            text-transform:uppercase;
+            margin-top:1rem;
+            color:var(--muted);
+        }
+
+        /* — HERO GRID — */
+        .front-page {
+            display:grid;
+            grid-template-columns:1fr;
+            border-bottom:2px solid var(--ink);
+        }
+        @media(min-width:900px) {
+            .front-page { grid-template-columns: 3fr 2px 2fr; }
+        }
+        .col-divide { background:var(--ink); display:none; }
+        @media(min-width:900px) { .col-divide { display:block; } }
+
+        /* — MAIN STORY — */
+        .main-story {
+            padding:2.5rem 2rem;
+            border-bottom:2px solid var(--ink);
+        }
+        @media(min-width:900px) { .main-story { border-bottom:none; } }
+        .kicker {
+            font-size:.65rem; letter-spacing:.3em; text-transform:uppercase;
+            font-family:'Source Serif 4',serif;
+            border-bottom:2px solid var(--ink);
+            padding-bottom:.5rem; margin-bottom:1.5rem; display:inline-block;
+        }
+        .headline-main {
+            font-size:clamp(3rem,6vw,6rem);
+            font-weight:900;
+            line-height:.9;
+            letter-spacing:-.02em;
+            margin-bottom:1.5rem;
+        }
+        .deck {
+            font-size:1.15rem;
+            font-style:italic;
+            line-height:1.5;
+            color:var(--muted);
+            border-left:3px solid var(--ink);
+            padding-left:1rem;
+            margin-bottom:2rem;
+        }
+        .story-body {
+            font-size:.9rem;
+            line-height:1.75;
+            columns:2;
+            column-gap:1.5rem;
+            column-rule:1px solid rgba(0,0,0,0.15);
+        }
+        @media(max-width:600px) { .story-body { columns:1; } }
+        .story-body p + p { text-indent:1.5em; }
+
+        /* — SIDEBAR — */
+        .sidebar {
+            padding:2.5rem 2rem;
+            border-top:2px solid var(--ink);
+            display:flex; flex-direction:column; gap:2.5rem;
+        }
+        @media(min-width:900px) { .sidebar { border-top:none; } }
+        .sidebar-section h4 {
+            font-size:.65rem; letter-spacing:.3em; text-transform:uppercase;
+            border-bottom:2px solid var(--ink); padding-bottom:.5rem;
+            margin-bottom:1.25rem;
+        }
+        .cta-box {
+            border:2px solid var(--ink);
+            padding:1.75rem;
+            background:var(--ink);
+            color:var(--paper);
+        }
+        .cta-box h3 { font-size:2rem; margin-bottom:.75rem; }
+        .cta-box p { font-size:.85rem; line-height:1.6; opacity:.75; margin-bottom:1.5rem; }
+        .cta-input {
+            width:100%; background:transparent;
+            border-bottom:1px solid rgba(255,255,255,0.3);
+            color:inherit; font-family:'Source Serif 4',serif;
+            font-size:1rem; padding:.75rem 0; outline:none;
+            transition:border-color .3s;
+            margin-bottom:1rem;
+        }
+        .cta-input::placeholder { color:rgba(255,255,255,0.35); }
+        .cta-input:focus { border-color:#fff; }
+        .cta-btn {
+            display:block; width:100%;
+            background:var(--paper); color:var(--ink);
+            font-family:'Playfair Display',serif;
+            font-size:1.1rem; font-weight:700;
+            padding:1rem; text-align:center;
+            cursor:pointer; border:none;
+            transition:opacity .2s;
+        }
+        .cta-btn:hover { opacity:.85; }
+        .tenets-list { list-style:none; display:flex; flex-direction:column; gap:1rem; }
+        .tenets-list li { font-size:.85rem; line-height:1.6; padding-left:1.25rem; position:relative; }
+        .tenets-list li::before { content:'—'; position:absolute; left:0; }
+
+        /* — LOWER BAND — */
+        .lower-band {
+            display:grid;
+            grid-template-columns:1fr;
+            border-bottom:2px solid var(--ink);
+        }
+        @media(min-width:768px) { .lower-band { grid-template-columns:repeat(3,1fr); } }
+        .lb-cell {
+            padding:2rem;
+            border-right:1px solid var(--ink);
+            border-bottom:1px solid var(--ink);
+            position:relative; overflow:hidden;
+            transition:background .35s;
+        }
+        .lb-cell:last-child { border-right:none; }
+        @media(min-width:768px) { .lb-cell { border-bottom:none; } }
+        .lb-cell:hover { background:var(--ink); color:var(--paper); }
+        .lb-num { font-family:'Playfair Display',serif; font-size:3rem; font-weight:900; opacity:.12; margin-bottom:.75rem; }
+        .lb-title { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; margin-bottom:.75rem; }
+        .lb-body { font-size:.82rem; line-height:1.7; opacity:.65; }
+        .lb-cell:hover .lb-body { opacity:.8; }
+
+        /* — PULL QUOTE — */
+        .pullquote-row {
+            padding:3rem 2rem;
+            text-align:center;
+            border-bottom:2px solid var(--ink);
+        }
+        .pullquote {
+            font-family:'Playfair Display',serif;
+            font-size:clamp(1.5rem,4vw,3.5rem);
+            font-style:italic;
+            font-weight:700;
+            max-width:900px;
+            margin:0 auto;
+            line-height:1.2;
+        }
+        .pullquote::before, .pullquote::after {
+            content:'"';
+            font-size:1.2em;
+            opacity:.2;
+        }
+
+        /* — FOOTER — */
+        footer {
+            padding:1.25rem 2rem;
+            display:flex; justify-content:space-between; align-items:center;
+            flex-wrap:wrap; gap:1rem;
+        }
+        .foot-brand { font-family:'Playfair Display',serif; font-weight:900; font-size:1.5rem; }
+        .foot-meta { font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); text-align:right; }
+        footer a { color:inherit; }
+
+        /* — ANIMATIONS — */
+        .reveal-el {
+            opacity:0; transform:translateY(24px);
+            transition:opacity .8s ease, transform .8s ease;
+        }
+        .reveal-el.vis { opacity:1; transform:translateY(0); }
+
+        /* animated underline on hover for kicker links */
+        .read-more {
+            font-size:.7rem; letter-spacing:.2em; text-transform:uppercase;
+            text-decoration:none; color:inherit;
+            display:inline-flex; align-items:center; gap:.5rem;
+            margin-top:1.5rem; font-family:'Source Serif 4',serif;
+            border-bottom:1px solid var(--ink);
+            padding-bottom:2px;
+            transition:gap .3s;
+        }
+        .read-more:hover { gap:1rem; }
+    </style>
+</head>
+<body>
+
+<div class="frame">
+
+    <!-- Masthead -->
+    <header class="masthead">
+        <div class="mast-top">
+            <span>Vol. I, No. 001</span>
+            <span>Est. 2026 · Curated Cofounder Matching</span>
+            <span>Serious Students Only</span>
+        </div>
+        <div class="mast-name">COFOUNDR</div>
+        <p class="mast-tagline">A Curated Platform for Ambitious Students &bull; Find Your Ideal Cofounder &bull; Build Fast, Build Better</p>
+    </header>
+
+    <!-- Front Page -->
+    <div class="front-page">
+
+        <!-- Main Story -->
+        <article class="main-story">
+            <span class="kicker">Breaking</span>
+            <h1 class="headline-main">Stop Trying to Build Alone.</h1>
+            <p class="deck">
+                Most student founders get stuck before they ever start — not because they lack ideas, but because they're trying to do everything themselves.
+            </p>
+            <div class="story-body">
+                <p>Random networking produces random results. LinkedIn, Discord, and college events are noisy and produce mismatched partnerships that fall apart fast. There is no filter for vision alignment or commitment level.</p>
+                <p>Skill gaps kill momentum. Solo founders stall on what they can't do — engineering, design, sales — and never ship. Momentum dies when you hit a wall you can't climb alone.</p>
+                <p>Most student startups never make money because they're treated as experiments. The wrong cofounder accelerates this failure.</p>
+                <p>Cofoundr is the curated platform that matches serious student founders with the right cofounder — so they stop trying to build alone and start building companies that actually make money.</p>
+            </div>
+            <a href="#waitlist" class="read-more">Secure Early Access →</a>
+        </article>
+
+        <div class="col-divide"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="sidebar-section" id="waitlist">
+                <h4>Join the Waitlist</h4>
+                <div class="cta-box">
+                    <h3>Claim Your Spot.</h3>
+                    <p>Priority matching and exclusive access for early members. Spots are limited. Designed for builders, not browsers.</p>
+                    <input type="email" class="cta-input" placeholder="your@university.edu" required>
+                    <button class="cta-btn">Join Waitlist →</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Our Tenets</h4>
+                <ul class="tenets-list">
+                    <li>Matching based on skills, vision, and commitment. Not random browsing.</li>
+                    <li>No cold DMs. No guessing. Connect and start building immediately.</li>
+                    <li>Real income, not just side projects. We filter in serious founders.</li>
+                    <li>Early members get priority matching and exclusive access.</li>
+                </ul>
+            </div>
+
+        </aside>
+    </div>
+
+    <!-- Pull Quote -->
+    <div class="pullquote-row reveal-el">
+        <blockquote class="pullquote">
+            Find the person who builds what you can't. Launch faster.
+        </blockquote>
+    </div>
+
+    <!-- Lower Band -->
+    <section class="lower-band">
+        <div class="lb-cell reveal-el">
+            <div class="lb-num">01</div>
+            <div class="lb-title">Curated Matching</div>
+            <p class="lb-body">Not random networking. Early members get priority matching based on skills, vision, and commitment level.</p>
+        </div>
+        <div class="lb-cell reveal-el">
+            <div class="lb-num">02</div>
+            <div class="lb-title">Ship Faster</div>
+            <p class="lb-body">The right cofounder removes blockers. When someone covers your gaps, you build at the speed of your ambition.</p>
+        </div>
+        <div class="lb-cell reveal-el">
+            <div class="lb-num">03</div>
+            <div class="lb-title">Real Companies</div>
+            <p class="lb-body">Turn ideas into revenue. We explicitly filter out browsers and casual experimenters. Serious founders only.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="foot-brand">COFOUNDR</div>
+        <div class="foot-meta">
+            Pranav Akki &amp; Charan Dhanasekar<br>
+            <a href="mailto:cofounder25@gmail.com">cofounder25@gmail.com</a>
+        </div>
+    </footer>
+
+</div>
+
+<script>
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } });
+    }, { threshold:0.1 });
+    document.querySelectorAll('.reveal-el').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cofoundr | The Ivy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300..900;1,300..900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F9F7F1;
+            --text-main: #1C2433;
+            --accent: #8E211A; /* Deep Crimson */
+            --border: #E2DFD8;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+        .font-serif {
+            font-family: 'Crimson Pro', serif;
+        }
+        ::selection {
+            background: var(--accent);
+            color: #fff;
+        }
+        .elegant-border {
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            background: #FFFFFF;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div class="max-w-5xl mx-auto w-full px-6 py-12 flex-1 flex flex-col">
+        
+        <!-- Header -->
+        <header class="flex justify-between items-end border-b border-[var(--border)] pb-6 mb-16">
+            <div>
+                <h1 class="font-serif text-4xl font-semibold tracking-tight text-[var(--text-main)]">Cofoundr.</h1>
+                <p class="text-sm text-gray-500 mt-1 uppercase tracking-widest">A Curated Society of Builders</p>
+            </div>
+            <div class="hidden sm:block text-right text-sm text-gray-500">
+                <p>Volume I.</p>
+                <p>Est. 2026</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+            
+            <div class="md:col-span-7">
+                <h2 class="font-serif text-5xl md:text-6xl font-medium leading-[1.1] mb-6">
+                    Find the person who <i class="text-[var(--accent)]">builds</i> what you can't.
+                </h2>
+                <p class="text-lg leading-relaxed text-gray-600 mb-8 max-w-xl font-light">
+                    Random networking produces random results. LinkedIn, Discord, and college events are noisy. We provide a curated platform for ambitious students to meet the right cofounder, launch successful startups, and turn ideas into reality.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#apply" class="bg-[var(--text-main)] text-white px-8 py-3 rounded-sm font-medium hover:bg-gray-800 transition-colors text-center">
+                        Request Access
+                    </a>
+                    <a href="#manifesto" class="border border-[var(--border)] bg-transparent px-8 py-3 rounded-sm font-medium hover:bg-white transition-colors text-center text-gray-700">
+                        Read the Manifesto
+                    </a>
+                </div>
+            </div>
+
+            <div class="md:col-span-5 relative">
+                <div class="elegant-border p-8 rounded-sm relative z-10">
+                    <h3 class="font-serif text-2xl font-semibold mb-4 border-b border-[var(--border)] pb-4">Our Tenets</h3>
+                    
+                    <ul class="space-y-6 mt-6">
+                        <li>
+                            <h4 class="font-medium text-[var(--text-main)] mb-1">I. Curated Matches</h4>
+                            <p class="text-sm text-gray-600 leading-relaxed font-light">Matching based on skills, vision, and commitment. Spots are limited to ensure quality.</p>
+                        </li>
+                        <li>
+                            <h4 class="font-medium text-[var(--text-main)] mb-1">II. Momentum Above All</h4>
+                            <p class="text-sm text-gray-600 leading-relaxed font-light">Launch with aligned partners who match your pace. Less friction, more output.</p>
+                        </li>
+                        <li>
+                            <h4 class="font-medium text-[var(--text-main)] mb-1">III. Real Income</h4>
+                            <p class="text-sm text-gray-600 leading-relaxed font-light">We filter out browsers. Build companies that generate real revenue, not just side projects.</p>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Decorative background offset -->
+                <div class="absolute inset-0 bg-[var(--accent)] translate-x-4 translate-y-4 rounded-sm z-0 opacity-10"></div>
+            </div>
+
+        </main>
+
+        <!-- Application Form -->
+        <section id="apply" class="mt-24 pt-16 border-t border-[var(--border)] text-center max-w-2xl mx-auto">
+            <h2 class="font-serif text-3xl mb-4">Join the Founding Community</h2>
+            <p class="text-gray-600 font-light mb-8">Early members get priority matching and exclusive access. Enter your university email to secure your place in the queue.</p>
+            
+            <form class="flex border-b border-[var(--text-main)] pb-2">
+                <input type="email" placeholder="Enter your .edu email..." class="flex-1 bg-transparent focus:outline-none text-lg placeholder-gray-400" required>
+                <button type="submit" class="font-medium text-[var(--accent)] uppercase tracking-widest text-sm hover:text-[var(--text-main)] transition-colors">
+                    Submit &rarr;
+                </button>
+            </form>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-24 pt-8 border-t border-[var(--border)] flex justify-between text-xs text-gray-500 uppercase tracking-widest font-medium">
+            <div>&copy; 2026 Cofoundr</div>
+            <div class="text-right">
+                Founders: P. Akki & C. Dhanasekar<br>
+                <a href="mailto:cofounder25@gmail.com" class="hover:text-[var(--accent)]">cofounder25@gmail.com</a>
+            </div>
+        </footer>
+
+    </div>
+</body>
+</html>

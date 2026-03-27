@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cofoundr | Stop Building Alone</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --off-white: #F5F5F0;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--off-white);
+            color: var(--black);
+            font-family: 'Libre Baskerville', serif;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        ::selection { background: var(--black); color: var(--white); }
+
+        /* ── CUSTOM CURSOR ── */
+        #cur {
+            position: fixed;
+            width: 12px; height: 12px;
+            background: var(--black);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: width .25s, height .25s, background .25s;
+            transform: translate(-50%, -50%);
+        }
+        body.cursor-big #cur { width: 48px; height: 48px; }
+
+        /* ── INTRO OVERLAY ── */
+        #intro {
+            position: fixed; inset: 0;
+            background: var(--black);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: intro-out 0.6s cubic-bezier(0.77, 0, 0.175, 1) 2s forwards;
+        }
+        #intro-text {
+            color: var(--white);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 10vw, 9rem);
+            letter-spacing: 0.15em;
+            animation: intro-text-in 1.2s cubic-bezier(0.77, 0, 0.175, 1) 0.2s both;
+        }
+        @keyframes intro-text-in {
+            0%   { opacity: 0; transform: scale(0.85); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes intro-out {
+            0%   { clip-path: inset(0 0 0 0); }
+            100% { clip-path: inset(0 0 100% 0); }
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 3rem;
+            mix-blend-mode: difference;
+        }
+        nav .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.1em;
+            color: var(--white);
+            text-decoration: none;
+        }
+        nav .nav-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--white);
+        }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: 1fr auto;
+            border-bottom: 3px solid var(--black);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-main {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 10rem 3rem 3rem;
+        }
+        .hero-eyebrow {
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fade-up 0.8s ease 2.8s forwards;
+        }
+        .hero-headline-wrap { overflow: hidden; }
+        .hero-headline {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(5rem, 15vw, 18rem);
+            line-height: 0.85;
+            letter-spacing: -0.02em;
+            display: block;
+            transform: translateY(110%);
+            animation: reveal 1s cubic-bezier(0.77, 0, 0.175, 1) 2.2s forwards;
+        }
+        .hero-headline.d2 { animation-delay: 2.35s; }
+        .hero-headline.italic {
+            font-family: 'Libre Baskerville', serif;
+            font-style: italic;
+            font-size: clamp(4rem, 12vw, 14rem);
+            font-weight: 400;
+            color: transparent;
+            -webkit-text-stroke: 2px var(--black);
+        }
+        .hero-sub-row {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 2.5rem 3rem;
+            border-top: 2px solid var(--black);
+            opacity: 0;
+            animation: fade-up 0.8s ease 3s forwards;
+        }
+        @media (min-width: 768px) {
+            .hero-sub-row { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+        .hero-body {
+            max-width: 420px;
+            font-size: 1.1rem;
+            line-height: 1.65;
+            font-weight: 400;
+        }
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--black);
+            color: var(--white);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 0.1em;
+            padding: 1.4rem 3rem;
+            text-decoration: none;
+            transition: background 0.3s, color 0.3s, gap 0.3s;
+            border: 2px solid var(--black);
+            white-space: nowrap;
+        }
+        .hero-cta:hover { background: var(--off-white); color: var(--black); gap: 2rem; }
+        .hero-cta span { transition: transform 0.3s; font-family: 'Libre Baskerville', serif; }
+        .hero-cta:hover span { transform: translateX(8px); }
+
+        /* ── MARQUEE ── */
+        .marquee-strip {
+            background: var(--black);
+            color: var(--white);
+            padding: 1.25rem 0;
+            overflow: hidden;
+            border-bottom: 3px solid var(--black);
+        }
+        .marquee-track {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee 22s linear infinite;
+        }
+        .marquee-item {
+            padding: 0 2.5rem;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+        }
+        .marquee-item::after {
+            content: '◆';
+            font-size: 0.8rem;
+            opacity: 0.4;
+        }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* ── PROBLEMS ── */
+        .problems {
+            display: grid;
+            grid-template-columns: 1fr;
+            border-bottom: 3px solid var(--black);
+        }
+        @media (min-width: 768px) { .problems { grid-template-columns: repeat(3, 1fr); } }
+        .problem-card {
+            padding: 4rem 3rem;
+            border-right: 3px solid var(--black);
+            position: relative;
+            overflow: hidden;
+            background: var(--off-white);
+            transition: background 0.4s;
+        }
+        .problem-card:last-child { border-right: none; }
+        .problem-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--black);
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            z-index: 0;
+        }
+        .problem-card:hover::before { transform: translateY(0); }
+        .problem-card:hover .p-num, .problem-card:hover .p-title, .problem-card:hover .p-text { color: var(--white); }
+        .p-num, .p-title, .p-text { position: relative; z-index: 1; transition: color 0.3s; }
+        .p-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 5rem;
+            line-height: 1;
+            margin-bottom: 2rem;
+            color: #d0d0ca;
+        }
+        .p-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+        }
+        .p-text { font-size: 0.95rem; line-height: 1.7; }
+
+        /* ── HOW IT WORKS ── */
+        .how {
+            padding: 6rem 3rem;
+            border-bottom: 3px solid var(--black);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4rem;
+        }
+        @media (min-width: 1024px) { .how { grid-template-columns: auto 1fr; gap: 8rem; align-items: start; } }
+        .how-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 6vw, 6rem);
+            line-height: 0.9;
+            letter-spacing: 0.05em;
+            writing-mode: horizontal-tb;
+        }
+        @media (min-width: 1024px) { .how-label { writing-mode: vertical-rl; transform: rotate(180deg); } }
+        .steps { display: flex; flex-direction: column; gap: 0; }
+        .step {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 2rem;
+            padding: 3rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.15);
+            align-items: start;
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .step.visible { opacity: 1; transform: translateX(0); }
+        .step:last-child { border-bottom: none; }
+        .step-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4rem;
+            line-height: 1;
+            color: #d0d0ca;
+        }
+        .step-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 0.03em;
+            margin-bottom: 0.75rem;
+        }
+        .step-body { font-size: 1rem; line-height: 1.65; }
+
+        /* ── WAITLIST ── */
+        .waitlist-section {
+            background: var(--black);
+            color: var(--white);
+            padding: 8rem 3rem;
+            text-align: center;
+            border-bottom: 3px solid var(--black);
+            position: relative;
+            overflow: hidden;
+        }
+        .wl-bg-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 25vw;
+            white-space: nowrap;
+            opacity: 0.04;
+            pointer-events: none;
+            letter-spacing: 0.1em;
+        }
+        .wl-eyebrow {
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            opacity: 0.5;
+        }
+        .wl-head {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3.5rem, 9vw, 9rem);
+            letter-spacing: 0.02em;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+        }
+        .wl-sub {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 480px;
+            margin: 0 auto 3.5rem;
+            opacity: 0.7;
+            font-style: italic;
+        }
+        .wl-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+        @media (min-width: 640px) { .wl-form { flex-direction: row; } }
+        .wl-input {
+            flex: 1;
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.3);
+            color: var(--white);
+            padding: 1.2rem 1.5rem;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .wl-input::placeholder { color: rgba(255,255,255,0.35); }
+        .wl-input:focus { border-color: var(--white); }
+        .wl-btn {
+            background: var(--white);
+            color: var(--black);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.08em;
+            padding: 1.2rem 2.5rem;
+            border: 2px solid var(--white);
+            cursor: none;
+            transition: background 0.3s, color 0.3s;
+            white-space: nowrap;
+        }
+        .wl-btn:hover { background: transparent; color: var(--white); }
+        .wl-caveat {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.4;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: var(--off-white);
+        }
+        @media (min-width: 640px) { footer { flex-direction: row; justify-content: space-between; align-items: center; } }
+        .footer-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.1em;
+        }
+        .footer-meta {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            text-align: right;
+        }
+        footer a { color: inherit; }
+        footer a:hover { opacity: 1; text-decoration: underline; }
+
+        /* ── UTILS ── */
+        @keyframes reveal { 0% { transform: translateY(110%); } 100% { transform: translateY(0); } }
+        @keyframes fade-up { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="cur"></div>
+
+    <!-- Intro splash -->
+    <div id="intro" aria-hidden="true">
+        <div id="intro-text">COFOUNDR</div>
+    </div>
+
+    <!-- Fixed Nav (mix-blend-mode: difference so it flips BW automatically) -->
+    <nav>
+        <a class="logo" href="#">COFOUNDR</a>
+        <span class="nav-label">Open for early members</span>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-main">
+            <p class="hero-eyebrow">A curated platform for serious student founders</p>
+
+            <div class="hero-headline-wrap"><span class="hero-headline">STOP</span></div>
+            <div class="hero-headline-wrap"><span class="hero-headline d2">BUILDING</span></div>
+            <div class="hero-headline-wrap"><span class="hero-headline italic d2">alone.</span></div>
+        </div>
+
+        <div class="hero-sub-row">
+            <p class="hero-body">
+                Random networking produces random results. We curate matches based on skills, vision, and commitment — so you can find the person who builds what you can't and launch faster.
+            </p>
+            <a href="#waitlist" class="hero-cta">Claim Your Spot <span>&rarr;</span></a>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee-strip" aria-hidden="true">
+        <div class="marquee-track">
+            <div class="marquee-item">BUILT FOR BUILDERS, NOT BROWSERS</div>
+            <div class="marquee-item">REAL INCOME, NOT SIDE PROJECTS</div>
+            <div class="marquee-item">NO COLD DMS. NO GUESSING</div>
+            <div class="marquee-item">CURATED MATCHES</div>
+            <div class="marquee-item">BUILD FAST. BUILD BETTER</div>
+            <!-- duplicate for seamless loop -->
+            <div class="marquee-item">BUILT FOR BUILDERS, NOT BROWSERS</div>
+            <div class="marquee-item">REAL INCOME, NOT SIDE PROJECTS</div>
+            <div class="marquee-item">NO COLD DMS. NO GUESSING</div>
+            <div class="marquee-item">CURATED MATCHES</div>
+            <div class="marquee-item">BUILD FAST. BUILD BETTER</div>
+        </div>
+    </div>
+
+    <!-- Problems -->
+    <section class="problems">
+        <div class="problem-card">
+            <div class="p-num">01</div>
+            <div class="p-title">Random Networking<br>Gets Random Results</div>
+            <p class="p-text">LinkedIn, Discord, and college events are noisy. There's no filter for vision alignment or commitment level. Random networking produces mismatched partnerships that fall apart fast.</p>
+        </div>
+        <div class="problem-card">
+            <div class="p-num">02</div>
+            <div class="p-title">Skill Gaps Kill<br>Momentum</div>
+            <p class="p-text">Solo founders stall on what they can't do — engineering, design, sales — and never ship. Momentum dies when you hit a wall you can't climb alone.</p>
+        </div>
+        <div class="problem-card">
+            <div class="p-num">03</div>
+            <div class="p-title">Side Projects<br>Stay Side Projects</div>
+            <p class="p-text">Most student startups never make money because they're treated as experiments. The wrong cofounder accelerates this failure.</p>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how">
+        <div class="how-label">How<br>It<br>Works</div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">01</div>
+                <div>
+                    <div class="step-title">Join the Waitlist</div>
+                    <p class="step-body">Get early access and become part of the founding community. Early members get priority matching and exclusive access.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">02</div>
+                <div>
+                    <div class="step-title">Create Your Profile</div>
+                    <p class="step-body">Share your skills, vision, and what you're looking for in a cofounder. This is what makes curated matching possible.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">03</div>
+                <div>
+                    <div class="step-title">Get Matched. Build.</div>
+                    <p class="step-body">Connect with your ideal cofounder and start building. No cold outreach. No guessing. Just aligned ambition.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist -->
+    <section class="waitlist-section" id="waitlist">
+        <div class="wl-bg-text" aria-hidden="true">BUILD</div>
+        <p class="wl-eyebrow">Spots are limited</p>
+        <h2 class="wl-head">Find Your<br>Cofounder.</h2>
+        <p class="wl-sub">Priority matching and exclusive access for early members. Designed for builders, not browsers.</p>
+        <form class="wl-form" onsubmit="event.preventDefault()">
+            <input type="email" class="wl-input" placeholder="Your .edu email address" required>
+            <button type="submit" class="wl-btn">JOIN NOW</button>
+        </form>
+        <p class="wl-caveat">No spam. No noise. Just your match.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-brand">COFOUNDR</div>
+        <div class="footer-meta">
+            Pranav Akki &amp; Charan Dhanasekar<br>
+            <a href="mailto:cofounder25@gmail.com">cofounder25@gmail.com</a>
+        </div>
+    </footer>
+
+    <script>
+        // ── Cursor ──
+        const cur = document.getElementById('cur');
+        document.addEventListener('mousemove', e => {
+            cur.style.left = e.clientX + 'px';
+            cur.style.top = e.clientY + 'px';
+        });
+        document.querySelectorAll('a, button, input, .problem-card').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-big'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-big'));
+        });
+
+        // ── Scroll-reveal steps ──
+        const steps = document.querySelectorAll('.step');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('visible'), i * 140);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        steps.forEach(s => observer.observe(s));
+    </script>
+
+</body>
+</html>

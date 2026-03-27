@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cofoundr | Swiss</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+
+        :root {
+            --w: #FAFAFA;
+            --b: #0A0A0A;
+            --g: #7a7a7a;
+            --gap: 1px;
+            --unit: clamp(60px, 8vw, 100px);
+        }
+
+        html, body { height:100%; }
+        body {
+            background: var(--w);
+            color: var(--b);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+        ::selection { background:var(--b); color:var(--w); }
+
+        /* THE GRID — thin black lines */
+        .grid-wrap { outline: var(--gap) solid var(--b); }
+        .row { display:grid; border-bottom: var(--gap) solid var(--b); }
+        .cell { border-right: var(--gap) solid var(--b); padding:0; }
+        .cell:last-child { border-right:none; }
+
+        /* NAVBAR ROW */
+        .nav-row { grid-template-columns:auto 1fr auto; align-items:stretch; }
+        .nav-logo {
+            padding:1.25rem 2rem;
+            font-family:'Space Mono',monospace;
+            font-size:1.1rem; font-weight:700;
+            letter-spacing:.05em;
+            display:flex; align-items:center;
+        }
+        .nav-mid {
+            display:flex; align-items:center; justify-content:center;
+            font-family:'Space Mono',monospace; font-size:.65rem;
+            letter-spacing:.25em; text-transform:uppercase; color:var(--g);
+        }
+        .nav-cta {
+            padding:0 2rem;
+            background:var(--b); color:var(--w);
+            font-family:'Space Grotesk',sans-serif;
+            font-size:.75rem; font-weight:600;
+            letter-spacing:.15em; text-transform:uppercase;
+            display:flex; align-items:center;
+            text-decoration:none; white-space:nowrap;
+            cursor:pointer;
+            transition:background .3s, color .3s;
+        }
+        .nav-cta:hover { background:var(--g); }
+
+        /* HERO ROW */
+        .hero-row { grid-template-columns:var(--unit) 1fr var(--unit); min-height:80vh; }
+        .side-col {
+            display:flex; align-items:flex-end; justify-content:center;
+            padding-bottom:2rem;
+        }
+        .side-label {
+            font-family:'Space Mono',monospace;
+            font-size:.6rem; letter-spacing:.25em; text-transform:uppercase; color:var(--g);
+            writing-mode:vertical-rl; transform:rotate(180deg);
+        }
+        .hero-center {
+            padding:4rem 3rem;
+            display:flex; flex-direction:column; justify-content:flex-end;
+        }
+        .h-eyebrow {
+            font-family:'Space Mono',monospace;
+            font-size:.65rem; letter-spacing:.2em; text-transform:uppercase;
+            color:var(--g); margin-bottom:2rem;
+        }
+        .h-head {
+            font-size:clamp(4rem,10vw,11rem);
+            font-weight:700; line-height:.9;
+            letter-spacing:-.04em;
+            margin-bottom:3rem;
+        }
+        .h-head em { font-style:normal; color:var(--g); }
+        .h-body {
+            font-size:1rem; line-height:1.7; color:var(--g);
+            max-width:520px; font-weight:400;
+        }
+
+        /* STAT ROW */
+        .stat-row { grid-template-columns:repeat(3,1fr); }
+        @media(max-width:600px) { .stat-row { grid-template-columns:1fr; } }
+        .stat-cell {
+            padding:2.5rem 2rem; position:relative; overflow:hidden;
+            cursor:default;
+        }
+        .stat-cell::after {
+            content:''; position:absolute; inset:0;
+            background:var(--b); transform:translateY(100%);
+            transition:transform .45s cubic-bezier(.77,0,.175,1); z-index:0;
+        }
+        .stat-cell:hover::after { transform:translateY(0); }
+        .stat-cell:hover .stat-num, .stat-cell:hover .stat-label { color:var(--w); }
+        .stat-num {
+            font-size:clamp(3rem,6vw,6rem); font-weight:700;
+            letter-spacing:-.04em; line-height:1;
+            display:block; position:relative; z-index:1;
+            transition:color .2s;
+        }
+        .stat-label {
+            display:block; font-family:'Space Mono',monospace;
+            font-size:.65rem; letter-spacing:.2em; text-transform:uppercase;
+            color:var(--g); margin-top:.75rem;
+            position:relative; z-index:1; transition:color .2s;
+        }
+
+        /* MARQUEE */
+        .mq-row { overflow:hidden; padding:1.25rem 0; background:var(--b); }
+        .mq-track {
+            display:inline-flex; gap:0;
+            animation:mq 22s linear infinite;
+        }
+        .mq-item {
+            font-family:'Space Mono',monospace; font-size:.8rem;
+            text-transform:uppercase; letter-spacing:.2em;
+            padding:0 3rem; color:var(--w); opacity:.5;
+            flex-shrink:0; white-space:nowrap;
+        }
+        .mq-dot { opacity:1 !important; padding:0; margin-right:3rem; }
+        @keyframes mq { to { transform:translateX(-50%); } }
+
+        /* PROBLEMS — full-bleed numbered list */
+        .prob-row { grid-template-columns:var(--unit) 1fr; }
+        .prob-index {
+            padding:0 0 0 0;
+            display:flex; flex-direction:column; justify-content:space-between;
+            align-items:center; padding:2rem 0;
+        }
+        .prob-index span {
+            font-family:'Space Mono',monospace; font-size:.6rem;
+            letter-spacing:.15em; color:var(--g); writing-mode:vertical-rl;
+        }
+        .prob-list { display:flex; flex-direction:column; }
+        .prob-item {
+            padding:2.5rem 2.5rem;
+            border-bottom:var(--gap) solid var(--b);
+            display:grid; grid-template-columns:3rem 1fr;
+            gap:2rem; align-items:start;
+            position:relative; overflow:hidden;
+            transition:background .3s;
+        }
+        .prob-item:last-child { border-bottom:none; }
+        .prob-item:hover { background:#F0F0F0; }
+        .prob-n {
+            font-family:'Space Mono',monospace; font-size:.75rem;
+            color:var(--g); padding-top:.35rem;
+        }
+        .prob-title { font-size:1.5rem; font-weight:700; margin-bottom:.5rem; letter-spacing:-.02em; }
+        .prob-body { font-size:.9rem; line-height:1.7; color:var(--g); }
+
+        /* PROCESS — horizontal steps */
+        .process-row { grid-template-columns:repeat(3,1fr); min-height:320px; }
+        @media(max-width:700px) { .process-row { grid-template-columns:1fr; } }
+        .process-cell {
+            padding:3rem 2rem; display:flex; flex-direction:column; justify-content:space-between;
+            position:relative; overflow:hidden;
+        }
+        .process-cell:nth-child(2) { background:var(--b); color:var(--w); }
+        .process-cell:nth-child(2) .pc-num { color:rgba(255,255,255,.2); }
+        .process-cell:nth-child(2) .pc-body { color:rgba(255,255,255,.6); }
+        .pc-num {
+            font-family:'Space Mono',monospace; font-size:.65rem;
+            letter-spacing:.2em; text-transform:uppercase; color:var(--g);
+        }
+        .pc-title { font-size:1.6rem; font-weight:700; letter-spacing:-.02em; margin-top:auto; padding-top:2rem; }
+        .pc-body { font-size:.85rem; line-height:1.65; color:var(--g); margin-top:.75rem; }
+
+        /* WAITLIST ROW */
+        .wl-row { grid-template-columns:1fr auto; }
+        @media(max-width:700px) { .wl-row { grid-template-columns:1fr; } }
+        .wl-left {
+            padding:4rem 2.5rem;
+        }
+        .wl-label {
+            font-family:'Space Mono',monospace; font-size:.65rem;
+            letter-spacing:.25em; text-transform:uppercase; color:var(--g);
+            margin-bottom:1.5rem; display:block;
+        }
+        .wl-head {
+            font-size:clamp(2.5rem,5vw,5rem); font-weight:700;
+            letter-spacing:-.03em; line-height:.95; margin-bottom:2.5rem;
+        }
+        .wl-form { display:flex; flex-direction:column; gap:1rem; max-width:500px; }
+        .wl-input {
+            background:transparent; border:var(--gap) solid var(--b);
+            padding:1.1rem 1.25rem; font-family:'Space Grotesk',sans-serif;
+            font-size:1rem; color:var(--b); outline:none;
+            transition:box-shadow .3s;
+        }
+        .wl-input:focus { box-shadow:inset 0 0 0 2px var(--b); }
+        .wl-input::placeholder { color:var(--g); }
+        .wl-btn {
+            background:var(--b); color:var(--w);
+            font-family:'Space Grotesk',sans-serif;
+            font-size:1rem; font-weight:600; letter-spacing:.1em;
+            text-transform:uppercase; padding:1.1rem 2rem;
+            border:none; cursor:pointer; width:fit-content;
+            transition:background .2s;
+            display:flex; align-items:center; gap:1rem;
+        }
+        .wl-btn:hover { background:var(--g); }
+        .wl-caveat { font-family:'Space Mono',monospace; font-size:.6rem; letter-spacing:.15em; color:var(--g); text-transform:uppercase; }
+        .wl-right {
+            padding:4rem 2.5rem;
+            border-left:var(--gap) solid var(--b);
+            display:flex; flex-direction:column; gap:2rem; min-width:260px;
+        }
+        @media(max-width:700px) { .wl-right { border-left:none; border-top:var(--gap) solid var(--b); } }
+        .tenet { border-bottom:var(--gap) solid var(--b); padding-bottom:1.5rem; }
+        .tenet:last-child { border-bottom:none; padding-bottom:0; }
+        .tenet-n { font-family:'Space Mono',monospace; font-size:.6rem; letter-spacing:.2em; color:var(--g); margin-bottom:.4rem; }
+        .tenet-t { font-size:.95rem; font-weight:600; }
+
+        /* FOOTER */
+        .foot-row { grid-template-columns:1fr auto; align-items:stretch; }
+        @media(max-width:500px) { .foot-row { grid-template-columns:1fr; } }
+        .foot-left {
+            padding:1.5rem 2rem;
+            font-family:'Space Mono',monospace; font-size:.65rem;
+            letter-spacing:.2em; text-transform:uppercase; color:var(--g);
+        }
+        .foot-right {
+            padding:1.5rem 2rem; text-align:right;
+            border-left:var(--gap) solid var(--b);
+            font-family:'Space Mono',monospace; font-size:.65rem;
+            letter-spacing:.15em; text-transform:uppercase; color:var(--g);
+        }
+        footer a { color:inherit; }
+        footer a:hover { color:var(--b); }
+
+        /* SCROLL REVEALS */
+        .sr {
+            opacity:0; transform:translateY(20px);
+            transition:opacity .7s ease, transform .7s ease;
+        }
+        .sr.vis { opacity:1; transform:translateY(0); }
+    </style>
+</head>
+<body>
+
+<div class="grid-wrap">
+
+    <!-- NAV -->
+    <div class="row nav-row">
+        <div class="cell nav-logo">COFOUNDR</div>
+        <div class="cell nav-mid">Curated Cofounder Matching · Est. 2026</div>
+        <a href="#waitlist" class="cell nav-cta">Join Waitlist →</a>
+    </div>
+
+    <!-- HERO -->
+    <div class="row hero-row">
+        <div class="cell side-col">
+            <span class="side-label">Scroll</span>
+        </div>
+        <div class="cell hero-center">
+            <p class="h-eyebrow">A platform for serious student founders</p>
+            <h1 class="h-head">Find Your<br><em>Ideal</em><br>Cofounder.</h1>
+            <p class="h-body">Curated matches based on skills, vision, and commitment. No random networking. No cold DMs. Built for builders, not browsers.</p>
+        </div>
+        <div class="cell side-col">
+            <span class="side-label">Cofoundr 2026</span>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="row stat-row sr">
+        <div class="cell stat-cell">
+            <span class="stat-num">3→1</span>
+            <span class="stat-label">Problems We Solve</span>
+        </div>
+        <div class="cell stat-cell">
+            <span class="stat-num">0</span>
+            <span class="stat-label">Cold DMs Required</span>
+        </div>
+        <div class="cell stat-cell">
+            <span class="stat-num">∞</span>
+            <span class="stat-label">Potential if matched right</span>
+        </div>
+    </div>
+
+    <!-- MARQUEE -->
+    <div class="row mq-row" aria-hidden="true">
+        <div class="mq-track">
+            <span class="mq-item">Built for Builders</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">Real Income</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">No Random Networking</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">Curated Matches</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">Build Fast</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">Build Better</span><span class="mq-item mq-dot">◆</span>
+            <!-- duplicate -->
+            <span class="mq-item">Built for Builders</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">Real Income</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">No Random Networking</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">Curated Matches</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">Build Fast</span><span class="mq-item mq-dot">◆</span>
+            <span class="mq-item">Build Better</span><span class="mq-item mq-dot">◆</span>
+        </div>
+    </div>
+
+    <!-- PROBLEMS -->
+    <div class="row prob-row sr">
+        <div class="cell prob-index">
+            <span>The Problem Space</span>
+        </div>
+        <div class="cell prob-list">
+            <div class="prob-item">
+                <span class="prob-n">01</span>
+                <div>
+                    <div class="prob-title">Random networking. Random results.</div>
+                    <p class="prob-body">LinkedIn, Discord, and college events are noisy. There's no filter for vision alignment or commitment level. Mismatched partnerships fall apart fast.</p>
+                </div>
+            </div>
+            <div class="prob-item">
+                <span class="prob-n">02</span>
+                <div>
+                    <div class="prob-title">Skill gaps kill momentum.</div>
+                    <p class="prob-body">Solo founders stall on what they can't do — engineering, design, sales. Momentum dies when you hit a wall you can't climb alone.</p>
+                </div>
+            </div>
+            <div class="prob-item">
+                <span class="prob-n">03</span>
+                <div>
+                    <div class="prob-title">Side projects stay side projects.</div>
+                    <p class="prob-body">Most student startups never make money because they're treated as experiments. The wrong cofounder accelerates this failure.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROCESS -->
+    <div class="row process-row sr">
+        <div class="cell process-cell">
+            <span class="pc-num">Step 01</span>
+            <div>
+                <div class="pc-title">Join the Waitlist</div>
+                <p class="pc-body">Get early access. Early members receive priority matching and exclusive access to the founding community.</p>
+            </div>
+        </div>
+        <div class="cell process-cell">
+            <span class="pc-num">Step 02</span>
+            <div>
+                <div class="pc-title">Create Your Profile</div>
+                <p class="pc-body">Share skills, vision, and what you're looking for. This makes curated matching possible.</p>
+            </div>
+        </div>
+        <div class="cell process-cell">
+            <span class="pc-num">Step 03</span>
+            <div>
+                <div class="pc-title">Get Matched. Build.</div>
+                <p class="pc-body">Connect with your ideal cofounder. No cold outreach. No guessing. Just aligned ambition.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- WAITLIST -->
+    <div class="row wl-row" id="waitlist">
+        <div class="cell wl-left sr">
+            <span class="wl-label">Join the Founding Community</span>
+            <h2 class="wl-head">Secure Your Spot Now.</h2>
+            <form class="wl-form" onsubmit="event.preventDefault()">
+                <input type="email" class="wl-input" placeholder="student@university.edu" required>
+                <button type="submit" class="wl-btn">Join Waitlist <span>→</span></button>
+                <p class="wl-caveat">Spots are limited. Priority access for early members.</p>
+            </form>
+        </div>
+        <div class="cell wl-right sr">
+            <div class="tenet">
+                <div class="tenet-n">01</div>
+                <div class="tenet-t">Curated, not random.</div>
+            </div>
+            <div class="tenet">
+                <div class="tenet-n">02</div>
+                <div class="tenet-t">Skills, vision, commitment.</div>
+            </div>
+            <div class="tenet">
+                <div class="tenet-n">03</div>
+                <div class="tenet-t">Real income, not side projects.</div>
+            </div>
+            <div class="tenet">
+                <div class="tenet-n">04</div>
+                <div class="tenet-t">Builders, not browsers.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="row foot-row">
+            <div class="cell foot-left">
+                &copy; 2026 Cofoundr &mdash; Pranav Akki &amp; Charan Dhanasekar
+            </div>
+            <div class="cell foot-right">
+                <a href="mailto:cofounder25@gmail.com">cofounder25@gmail.com</a>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<script>
+    const io = new IntersectionObserver(entries => {
+        entries.forEach((e, i) => {
+            if(e.isIntersecting) {
+                setTimeout(() => e.target.classList.add('vis'), i * 80);
+                io.unobserve(e.target);
+            }
+        });
+    }, { threshold:0.08 });
+    document.querySelectorAll('.sr').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

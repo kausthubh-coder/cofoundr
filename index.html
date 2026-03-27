@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cofoundr | Builders, Not Browsers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #050505;
+            --text-main: #F4F4F0;
+            --accent: #D6FF00; /* Acid Yellow */
+            --accent-secondary: #FF3E00; /* Safety Orange */
+            --border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
+            cursor: none; /* Custom cursor */
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        ::selection {
+            background-color: var(--accent);
+            color: #000;
+        }
+
+        /* Typography */
+        .font-head {
+            font-family: 'Unbounded', sans-serif;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 16px; height: 16px;
+            background: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: exclusion;
+            transition: transform 0.1s ease-out, width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+            transform: translate3d(-50%, -50%, 0);
+            margin-top: -8px;
+            margin-left: -8px;
+        }
+        #cursor.cursor-hover {
+            width: 64px;
+            height: 64px;
+            margin-top: -32px;
+            margin-left: -32px;
+            background: #fff;
+        }
+        @media (max-width: 768px) {
+            #cursor { display: none !important; }
+            body, html { cursor: auto; }
+        }
+
+        /* Noise Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Grid Background */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, var(--border-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--border-color) 1px, transparent 1px);
+        }
+
+        /* Animations */
+        @keyframes reveal-up {
+            0% { transform: translateY(110%); }
+            100% { transform: translateY(0); }
+        }
+        @keyframes fade-in {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .reveal-text {
+            animation: reveal-up 1s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+            transform: translateY(110%);
+        }
+        .reveal-fade {
+            animation: fade-in 1s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+            opacity: 0;
+        }
+
+        /* Marquee */
+        .marquee {
+            width: 100%;
+            overflow: hidden;
+            background: var(--text-main);
+            color: var(--bg-color);
+            padding: 1rem 0;
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .marquee-content {
+            display: flex;
+            white-space: nowrap;
+            animation: scroll 15s linear infinite;
+        }
+        .marquee-content span {
+            padding: 0 2rem;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Hover Reveal Sections */
+        .hover-reveal-bg {
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(101%);
+        }
+        .group:hover .hover-reveal-bg {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- Hero Section -->
+    <div class="min-h-screen flex flex-col border-b border-[var(--border-color)]">
+        
+        <!-- Navbar -->
+        <nav class="border-b border-[var(--border-color)] p-6 flex justify-between items-center z-50 bg-[var(--bg-color)]">
+            <div class="font-head text-2xl tracking-tighter uppercase font-black">
+                COFOUNDR<span class="text-[var(--accent)]">.</span>
+            </div>
+            <div class="font-mono text-xs hidden md:flex items-center gap-3 border border-[var(--border-color)] rounded-none px-4 py-2 uppercase tracking-wide">
+                <span class="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></span> Accepting early members
+            </div>
+        </nav>
+        
+        <!-- Main Hero Layout -->
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 relative">
+            
+            <!-- Left Side: Copy -->
+            <div class="lg:col-span-8 border-b lg:border-b-0 lg:border-r border-[var(--border-color)] flex flex-col justify-center p-8 lg:p-16 xl:p-24 relative overflow-hidden">
+                
+                <!-- Architectural Grid Background -->
+                <div class="absolute inset-0 bg-grid opacity-20 pointer-events-none"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-color)] to-transparent pointer-events-none z-0"></div>
+                
+                <div class="z-10 relative">
+                    <p class="font-mono text-[var(--accent)] text-sm mb-8 reveal-fade uppercase tracking-widest border-l-2 border-[var(--accent)] pl-4">
+                        / Curated platform for serious students
+                    </p>
+                    
+                    <h1 class="font-head text-[13vw] lg:text-[7.5vw] leading-[0.85] font-black uppercase tracking-tighter mb-10">
+                        <div class="overflow-hidden pb-2"><span class="block reveal-text">FIND YOUR</span></div>
+                        <div class="overflow-hidden pb-2"><span class="block reveal-text" style="animation-delay: 0.1s">IDEAL</span></div>
+                        <div class="overflow-hidden pb-2"><span class="block reveal-text text-[var(--accent)]" style="animation-delay: 0.2s">COFOUNDER.</span></div>
+                    </h1>
+                    
+                    <p class="font-mono text-lg lg:text-xl max-w-2xl leading-relaxed text-white/70 reveal-fade" style="animation-delay: 0.4s">
+                        Stop trying to build alone. Random networking is slow and produces mismatched partnerships. We connect ambitious students who complement each other's skills and match each other's pace.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Right Side: CTA / Waitlist -->
+            <div class="lg:col-span-4 bg-[var(--accent)] flex flex-col justify-between p-8 lg:p-12 text-black reveal-fade relative" style="animation-delay: 0.5s">
+                <!-- Decorative Arrow -->
+                <svg class="absolute top-8 right-8 w-12 h-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M17 7l-10 10M17 7H7M17 7v10"></path>
+                </svg>
+
+                <div class="mt-12 lg:mt-0">
+                    <h2 class="font-head text-4xl lg:text-5xl font-black uppercase mb-6 leading-none">ACCESS<br>THE<br>WAITLIST</h2>
+                    <p class="font-mono text-sm font-bold opacity-80 mb-12 uppercase tracking-wide border-l-2 border-black pl-4">
+                        Priority matching for early members. Designed for builders, not browsers.
+                    </p>
+                </div>
+                
+                <form class="space-y-6 w-full relative z-10" onsubmit="event.preventDefault()">
+                    <div class="relative group">
+                        <input type="email" placeholder="YOUR .EDU EMAIL" class="w-full bg-transparent border-b-2 border-black/20 font-mono font-bold text-lg py-4 focus:outline-none focus:border-black transition-colors placeholder-black/40 interactive-el" required>
+                        <div class="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 ease-out group-focus-within:w-full"></div>
+                    </div>
+                    <button type="submit" class="w-full bg-black text-[var(--accent)] font-head font-bold text-lg uppercase tracking-widest py-6 hover:bg-white hover:text-black transition-colors duration-300 flex justify-between items-center px-8 interactive-el group">
+                        <span>Claim Spot</span>
+                        <span class="group-hover:translate-x-2 transition-transform">&rarr;</span>
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Infinite Marquee -->
+    <div class="marquee font-head uppercase font-bold text-2xl lg:text-4xl tracking-tight">
+        <div class="marquee-content">
+            <!-- Double content for seamless looping -->
+            <div class="flex items-center">
+                <span>BUILT FOR BUILDERS, NOT BROWSERS.</span> <span class="text-[var(--accent-secondary)]">*</span>
+                <span>REAL INCOME, NOT JUST SIDE PROJECTS.</span> <span class="text-[var(--accent-secondary)]">*</span>
+                <span>FIND THE PERSON WHO BUILDS WHAT YOU CAN'T.</span> <span class="text-[var(--accent-secondary)]">*</span>
+            </div>
+            <div class="flex items-center">
+                <span>BUILT FOR BUILDERS, NOT BROWSERS.</span> <span class="text-[var(--accent-secondary)]">*</span>
+                <span>REAL INCOME, NOT JUST SIDE PROJECTS.</span> <span class="text-[var(--accent-secondary)]">*</span>
+                <span>FIND THE PERSON WHO BUILDS WHAT YOU CAN'T.</span> <span class="text-[var(--accent-secondary)]">*</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Problem Section -->
+    <section class="border-b border-[var(--border-color)]">
+        <div class="grid grid-cols-1 lg:grid-cols-3">
+            <!-- Problem 1 -->
+            <div class="p-10 lg:p-16 border-b lg:border-b-0 lg:border-r border-[var(--border-color)] hover:bg-white hover:text-black transition-colors duration-500 group">
+                <div class="font-mono text-sm mb-20 opacity-50 group-hover:opacity-100 transition-opacity">01 // THE NOISE</div>
+                <h3 class="font-head text-3xl font-bold uppercase mb-6">Random results</h3>
+                <p class="font-mono text-sm leading-relaxed opacity-70 group-hover:opacity-100">LinkedIn, Discord, and college events are noisy. There's no filter for vision alignment or commitment level. Random networking produces mismatched partnerships that fall apart fast.</p>
+            </div>
+            <!-- Problem 2 -->
+            <div class="p-10 lg:p-16 border-b lg:border-b-0 lg:border-r border-[var(--border-color)] hover:bg-[var(--accent)] hover:text-black transition-colors duration-500 group">
+                <div class="font-mono text-sm mb-20 opacity-50 group-hover:opacity-100 transition-opacity">02 // THE BOTTLENECK</div>
+                <h3 class="font-head text-3xl font-bold uppercase mb-6">Skill gaps kill</h3>
+                <p class="font-mono text-sm leading-relaxed opacity-70 group-hover:opacity-100">Solo founders stall on what they can't do — engineering, design, sales — and never ship. Momentum dies when you hit a wall you can't climb alone.</p>
+            </div>
+            <!-- Problem 3 -->
+            <div class="p-10 lg:p-16 hover:bg-[var(--accent-secondary)] hover:text-white transition-colors duration-500 group">
+                <div class="font-mono text-sm mb-20 opacity-50 group-hover:opacity-100 transition-opacity">03 // THE GRAVEYARD</div>
+                <h3 class="font-head text-3xl font-bold uppercase mb-6">Side projects die</h3>
+                <p class="font-mono text-sm leading-relaxed opacity-70 group-hover:opacity-100">Most student startups never make money because they're treated as experiments. The wrong cofounder accelerates this failure.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Value Props Section -->
+    <section class="py-24 lg:py-32 border-b border-[var(--border-color)] bg-grid">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 bg-[var(--bg-color)]/90 backdrop-blur-sm border border-[var(--border-color)] p-8 lg:p-16">
+            
+            <h2 class="font-head text-[10vw] md:text-[6vw] font-black uppercase mb-20 leading-[0.9] tracking-tighter">
+                We fix the <br>
+                <span class="text-transparent" style="-webkit-text-stroke: 1px var(--text-main);">founder gap.</span>
+            </h2>
+            
+            <div class="border-t border-[var(--border-color)]">
+                
+                <!-- Prop 1 -->
+                <div class="py-12 border-b border-[var(--border-color)] flex flex-col md:flex-row gap-8 group relative overflow-hidden interactive-el">
+                    <div class="absolute inset-0 bg-[var(--accent)] hover-reveal-bg z-0"></div>
+                    <div class="font-mono text-[var(--accent)] group-hover:text-black z-10 w-24 pt-2 transition-colors">/ 01</div>
+                    <div class="flex-1 z-10 group-hover:text-black transition-colors duration-300">
+                        <h3 class="font-head text-3xl md:text-5xl font-bold uppercase mb-6 transition-transform duration-500 ease-out group-hover:translate-x-4">Find the right cofounder</h3>
+                        <p class="font-mono text-base md:text-lg max-w-2xl opacity-70 group-hover:opacity-100 transition-opacity">The differentiator is curation. Matching is based on skills, vision, and commitment level — not random browsing. Find the person who builds what you can't.</p>
+                    </div>
+                </div>
+                
+                <!-- Prop 2 -->
+                <div class="py-12 border-b border-[var(--border-color)] flex flex-col md:flex-row gap-8 group relative overflow-hidden interactive-el">
+                    <div class="absolute inset-0 bg-[var(--accent-secondary)] hover-reveal-bg z-0"></div>
+                    <div class="font-mono text-[var(--accent-secondary)] group-hover:text-white z-10 w-24 pt-2 transition-colors">/ 02</div>
+                    <div class="flex-1 z-10 group-hover:text-white transition-colors duration-300">
+                        <h3 class="font-head text-3xl md:text-5xl font-bold uppercase mb-6 transition-transform duration-500 ease-out group-hover:translate-x-4">Build faster</h3>
+                        <p class="font-mono text-base md:text-lg max-w-2xl opacity-70 group-hover:opacity-100 transition-opacity">The right cofounder removes blockers. Launch with aligned partners who match your pace and ambition. Less friction, more output.</p>
+                    </div>
+                </div>
+
+                <!-- Prop 3 -->
+                <div class="py-12 flex flex-col md:flex-row gap-8 group relative overflow-hidden interactive-el">
+                    <div class="absolute inset-0 bg-white hover-reveal-bg z-0"></div>
+                    <div class="font-mono text-white group-hover:text-black z-10 w-24 pt-2 transition-colors">/ 03</div>
+                    <div class="flex-1 z-10 group-hover:text-black transition-colors duration-300">
+                        <h3 class="font-head text-3xl md:text-5xl font-bold uppercase mb-6 transition-transform duration-500 ease-out group-hover:translate-x-4">Turn ideas into revenue</h3>
+                        <p class="font-mono text-base md:text-lg max-w-2xl opacity-70 group-hover:opacity-100 transition-opacity">Real income, not just side projects. We filter out the browsers so you can build companies that actually make money.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="border-b border-[var(--border-color)]">
+        <div class="grid grid-cols-1 lg:grid-cols-4">
+            
+            <div class="p-10 lg:p-12 lg:col-span-1 border-b lg:border-b-0 lg:border-r border-[var(--border-color)] bg-[var(--text-main)] text-black flex items-center justify-center">
+                <h2 class="font-head text-6xl md:text-7xl lg:text-8xl font-black uppercase text-center lg:text-left leading-[0.85] tracking-tighter">HOW<br>IT<br>WORKS</h2>
+            </div>
+            
+            <!-- Step 1 -->
+            <div class="p-10 lg:p-12 lg:col-span-1 border-b lg:border-b-0 lg:border-r border-[var(--border-color)] relative group">
+                <div class="font-mono text-[var(--accent)] mb-12">STEP 1</div>
+                <div class="w-16 h-16 border border-[var(--border-color)] flex items-center justify-center font-head text-2xl mb-8 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors">1</div>
+                <h3 class="font-head text-2xl font-bold uppercase mb-4">Join Waitlist</h3>
+                <p class="font-mono text-sm opacity-70 leading-relaxed">Get early access and be part of the founding community. Early members get priority matching.</p>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="p-10 lg:p-12 lg:col-span-1 border-b lg:border-b-0 lg:border-r border-[var(--border-color)] relative group">
+                <div class="font-mono text-[var(--accent)] mb-12">STEP 2</div>
+                <div class="w-16 h-16 border border-[var(--border-color)] flex items-center justify-center font-head text-2xl mb-8 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors">2</div>
+                <h3 class="font-head text-2xl font-bold uppercase mb-4">Create Profile</h3>
+                <p class="font-mono text-sm opacity-70 leading-relaxed">Share your skills, vision, and what you're looking for. This is what makes curated matching possible.</p>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="p-10 lg:p-12 lg:col-span-1 relative group">
+                <div class="font-mono text-[var(--accent)] mb-12">STEP 3</div>
+                <div class="w-16 h-16 border border-[var(--border-color)] flex items-center justify-center font-head text-2xl mb-8 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors">3</div>
+                <h3 class="font-head text-2xl font-bold uppercase mb-4">Get Matched</h3>
+                <p class="font-mono text-sm opacity-70 leading-relaxed">Connect with your ideal cofounder and start building. No cold outreach. No guessing.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="pt-24 pb-12 px-6 lg:px-12 border-b-[24px] border-[var(--accent)] relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-[50vw] h-[50vw] bg-[var(--accent)] rounded-full mix-blend-exclusion blur-[120px] opacity-20 pointer-events-none translate-x-1/2 -translate-y-1/2"></div>
+
+        <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-end gap-12 relative z-10">
+            <div>
+                <h2 class="font-head text-5xl md:text-8xl lg:text-[8rem] font-black uppercase tracking-tighter mb-4 leading-none">COFOUNDR<span class="text-[var(--accent)]">.</span></h2>
+                <p class="font-mono text-lg lg:text-2xl opacity-80 uppercase tracking-widest">Designed for builders, not browsers.</p>
+            </div>
+            
+            <div class="font-mono text-sm text-left md:text-right space-y-3 opacity-60">
+                <p class="uppercase tracking-widest border-b border-[var(--border-color)] pb-4 mb-4">Built by student founders,<br>for student founders.</p>
+                <p>Pranav Akki & Charan Dhanasekar</p>
+                <a href="mailto:cofounder25@gmail.com" class="inline-block hover:text-[var(--accent)] transition-colors interactive-el">cofounder25@gmail.com</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        
+        // Track mouse movement
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+        });
+
+        // Add hover effect for interactive elements
+        const interactives = document.querySelectorAll('a, button, input, .interactive-el');
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('cursor-hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-hover'));
+        });
+
+        // Hide cursor when leaving window
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>
